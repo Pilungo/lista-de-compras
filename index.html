@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Compras</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        #product-form {
+            display: flex;
+            flex-direction: column;
+            max-width: 400px;
+            margin: 0 auto 20px;
+        }
+        #product-form input {
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #product-form button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #product-form button:hover {
+            background-color: #218838;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background-color: white;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .bought {
+            text-decoration: line-through;
+            color: gray;
+        }
+        .actions button {
+            margin-left: 10px;
+        }
+        .actions .edit-btn {
+            background-color: #ffc107;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .actions .edit-btn:hover {
+            background-color: #e0a800;
+        }
+        .actions .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .actions .delete-btn:hover {
+            background-color: #c82333;
+        }
+        .actions .mark-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .actions .mark-btn:hover {
+            background-color: #0069d9;
+        }
+        .total {
+            font-size: 20px;
+            text-align: right;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Lista de Compras</h1>
+
+    <form id="product-form">
+        <input type="text" id="product-name" placeholder="Nome do Produto" required>
+        <input type="number" id="product-quantity" placeholder="Quantidade" required>
+        <input type="number" id="product-price" placeholder="Preço Unitário (R$)" step="0.01" required>
+        <button type="submit">Adicionar Produto</button>
+    </form>
+
+    <ul id="product-list"></ul>
+
+    <div class="total">Total: R$ <span id="total-value">0.00</span></div>
+
+    <script>
+        const form = document.getElementById('product-form');
+        const productList = document.getElementById('product-list');
+        const totalValueElement = document.getElementById('total-value');
+
+        let totalValue = 0;
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('product-name').value;
+            const quantity = parseInt(document.getElementById('product-quantity').value);
+            const price = parseFloat(document.getElementById('product-price').value);
+
+            const listItem = document.createElement('li');
+
+            listItem.innerHTML = `
+                <span>${name} - ${quantity} unidades - R$ ${(price * quantity).toFixed(2)}</span>
+                <div class="actions">
+                    <button class="edit-btn">Editar</button>
+                    <button class="delete-btn">Excluir</button>
+                    <button class="mark-btn">Marcar como Comprado</button>
+                </div>
+            `;
+
+            productList.appendChild(listItem);
+
+            totalValue += price * quantity;
+            totalValueElement.textContent = totalValue.toFixed(2);
+
+            form.reset();
+
+            listItem.querySelector('.delete-btn').addEventListener('click', function() {
+                productList.removeChild(listItem);
+                totalValue -= price * quantity;
+                totalValueElement.textContent = totalValue.toFixed(2);
+            });
+
+            listItem.querySelector('.edit-btn').addEventListener('click', function() {
+                document.getElementById('product-name').value = name;
+                document.getElementById('product-quantity').value = quantity;
+                document.getElementById('product-price').value = price;
+
+                productList.removeChild(listItem);
+                totalValue -= price * quantity;
+                totalValueElement.textContent = totalValue.toFixed(2);
+            });
+
+            listItem.querySelector('.mark-btn').addEventListener('click', function() {
+                listItem.classList.toggle('bought');
+            });
+        });
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+            .then(() => console.log('Service Worker registrado com sucesso!'))
+            .catch(error => console.log('Erro ao registrar o Service Worker:', error));
+        }
+    </script>
+
+</body>
+</html>
