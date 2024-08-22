@@ -2,11 +2,11 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open('app-cache').then(cache => {
             return cache.addAll([
-                '/',
-                '/index.html',
-                '/manifest.json',
-                '/icon-192.png',
-                '/icon-512.png'
+                '/lista-de-compras/',
+                '/lista-de-compras/index.html',
+                '/lista-de-compras/manifest.json',
+                '/lista-de-compras/icon-192.png',
+                '/lista-de-compras/icon-512.png'
             ]);
         })
     );
@@ -19,4 +19,3 @@ self.addEventListener('fetch', event => {
         })
     );
 });
-S
