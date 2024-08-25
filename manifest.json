@@ -2,7 +2,7 @@
   "name": "Lista de Compras",
   "short_name": "Compras",
   "description": "Um app simples para gerenciar sua lista de compras.",
-  "start_url": "/index.html",
+  "start_url": "/nome-do-repositorio/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007bff",

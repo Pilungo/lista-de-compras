@@ -116,13 +116,79 @@
 
         let totalValue = 0;
 
+        function saveList() {
+            const items = [];
+            productList.querySelectorAll('li').forEach(item => {
+                const text = item.querySelector('span').innerText;
+                const isBought = item.classList.contains('bought');
+                items.push({ text, isBought });
+            });
+            localStorage.setItem('shoppingList', JSON.stringify(items));
+            localStorage.setItem('totalValue', totalValue.toFixed(2));
+        }
+
+        function loadList() {
+            const savedItems = JSON.parse(localStorage.getItem('shoppingList')) || [];
+            totalValue = parseFloat(localStorage.getItem('totalValue')) || 0;
+            totalValueElement.textContent = totalValue.toFixed(2);
+
+            savedItems.forEach(({ text, isBought }) => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <span>${text}</span>
+                    <div class="actions">
+                        <button class="edit-btn">Editar</button>
+                        <button class="delete-btn">Excluir</button>
+                        <button class="mark-btn">Marcar como Comprado</button>
+                    </div>
+                `;
+                if (isBought) {
+                    listItem.classList.add('bought');
+                }
+                addEventListeners(listItem);
+                productList.appendChild(listItem);
+            });
+        }
+
+        function addEventListeners(listItem) {
+            listItem.querySelector('.delete-btn').addEventListener('click', function() {
+                const text = listItem.querySelector('span').innerText;
+                const price = parseFloat(text.split(' - ')[2].replace('R$ ', ''));
+                const quantity = parseInt(text.split(' - ')[1].replace(' unidades', ''));
+                totalValue -= price;
+                totalValueElement.textContent = totalValue.toFixed(2);
+                productList.removeChild(listItem);
+                saveList();
+            });
+
+            listItem.querySelector('.edit-btn').addEventListener('click', function() {
+                const text = listItem.querySelector('span').innerText;
+                const [name, quantityStr, priceStr] = text.split(' - ');
+                const quantity = parseInt(quantityStr.replace(' unidades', ''));
+                const price = parseFloat(priceStr.replace('R$ ', ''));
+
+                document.getElementById('product-name').value = name;
+                document.getElementById('product-quantity').value = quantity;
+                document.getElementById('product-price').value = (price / quantity).toFixed(2);
+
+                totalValue -= price;
+                totalValueElement.textContent = totalValue.toFixed(2);
+                productList.removeChild(listItem);
+                saveList();
+            });
+
+            listItem.querySelector('.mark-btn').addEventListener('click', function() {
+                listItem.classList.toggle('bought');
+                saveList();
+            });
+        }
+
         form.addEventListener('submit', function(event) {
             event.preventDefault();
 
             const name = document.getElementById('product-name').value;
             const quantity = parseInt(document.getElementById('product-quantity').value);
             const price = parseFloat(document.getElementById('product-price').value);
-
             const listItem = document.createElement('li');
 
             listItem.innerHTML = `
@@ -134,33 +200,17 @@
                 </div>
             `;
 
+            addEventListeners(listItem);
             productList.appendChild(listItem);
 
             totalValue += price * quantity;
             totalValueElement.textContent = totalValue.toFixed(2);
 
             form.reset();
-
-            listItem.querySelector('.delete-btn').addEventListener('click', function() {
-                productList.removeChild(listItem);
-                totalValue -= price * quantity;
-                totalValueElement.textContent = totalValue.toFixed(2);
-            });
-
-            listItem.querySelector('.edit-btn').addEventListener('click', function() {
-                document.getElementById('product-name').value = name;
-                document.getElementById('product-quantity').value = quantity;
-                document.getElementById('product-price').value = price;
-
-                productList.removeChild(listItem);
-                totalValue -= price * quantity;
-                totalValueElement.textContent = totalValue.toFixed(2);
-            });
-
-            listItem.querySelector('.mark-btn').addEventListener('click', function() {
-                listItem.classList.toggle('bought');
-            });
+            saveList();
         });
+
+        window.addEventListener('load', loadList);
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/lista-de-compras/service-worker.js')
