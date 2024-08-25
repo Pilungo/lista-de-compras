@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Compras</title>
-    <link rel="manifest" href="/lista-de-compras/manifest.json">
+    <link rel="manifest" href="manifest.json"> <!-- Ajustado para caminho relativo -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -213,7 +213,7 @@
         window.addEventListener('load', loadList);
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/lista-de-compras/service-worker.js')
+            navigator.serviceWorker.register('service-worker.js') // Caminho relativo
             .then(() => console.log('Service Worker registrado com sucesso!'))
             .catch(error => console.log('Erro ao registrar o Service Worker:', error));
         }
