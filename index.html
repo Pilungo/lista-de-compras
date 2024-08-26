@@ -4,93 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Compras</title>
-    <link rel="manifest" href="manifest.json"> <!-- Ajustado para caminho relativo -->
+    <link rel="manifest" href="manifest.json">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f0f0f0;
             margin: 0;
             padding: 20px;
         }
+
         h1 {
             text-align: center;
         }
-        #product-form {
+
+        form {
             display: flex;
             flex-direction: column;
-            max-width: 400px;
-            margin: 0 auto 20px;
+            margin-bottom: 20px;
         }
-        #product-form input {
-            margin-bottom: 10px;
+
+        input, button {
+            margin: 5px 0;
             padding: 10px;
             font-size: 16px;
         }
-        #product-form button {
-            padding: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        #product-form button:hover {
-            background-color: #218838;
-        }
+
         ul {
-            list-style: none;
+            list-style-type: none;
             padding: 0;
         }
+
         li {
             background-color: white;
             margin-bottom: 10px;
             padding: 10px;
-            border: 1px solid #ccc;
+            border-radius: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .bought {
+
+        li.bought {
             text-decoration: line-through;
-            color: gray;
         }
-        .actions button {
-            margin-left: 10px;
+
+        .actions {
+            display: flex;
+            gap: 5px;
         }
-        .actions .edit-btn {
-            background-color: #ffc107;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
+
+        .total {
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
         }
-        .actions .edit-btn:hover {
-            background-color: #e0a800;
-        }
-        .actions .delete-btn {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        .actions .delete-btn:hover {
-            background-color: #c82333;
-        }
-        .actions .mark-btn {
+
+        #share-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px;
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
-        }
-        .actions .mark-btn:hover {
-            background-color: #0069d9;
-        }
-        .total {
-            font-size: 20px;
-            text-align: right;
-            margin-top: 20px;
         }
     </style>
 </head>
@@ -109,10 +87,14 @@
 
     <div class="total">Total: R$ <span id="total-value">0.00</span></div>
 
+    <!-- Botão para compartilhar a lista -->
+    <button id="share-button" style="display: none;">Compartilhar Lista</button>
+
     <script>
         const form = document.getElementById('product-form');
         const productList = document.getElementById('product-list');
         const totalValueElement = document.getElementById('total-value');
+        const shareButton = document.getElementById('share-button');
 
         let totalValue = 0;
 
@@ -148,6 +130,11 @@
                 addEventListeners(listItem);
                 productList.appendChild(listItem);
             });
+
+            // Mostrar o botão de compartilhamento se houver itens na lista
+            if (savedItems.length > 0) {
+                shareButton.style.display = 'block';
+            }
         }
 
         function addEventListeners(listItem) {
@@ -159,6 +146,11 @@
                 totalValueElement.textContent = totalValue.toFixed(2);
                 productList.removeChild(listItem);
                 saveList();
+
+                // Ocultar o botão de compartilhamento se a lista estiver vazia
+                if (productList.children.length === 0) {
+                    shareButton.style.display = 'none';
+                }
             });
 
             listItem.querySelector('.edit-btn').addEventListener('click', function() {
@@ -175,6 +167,11 @@
                 totalValueElement.textContent = totalValue.toFixed(2);
                 productList.removeChild(listItem);
                 saveList();
+
+                // Ocultar o botão de compartilhamento se a lista estiver vazia
+                if (productList.children.length === 0) {
+                    shareButton.style.display = 'none';
+                }
             });
 
             listItem.querySelector('.mark-btn').addEventListener('click', function() {
@@ -208,12 +205,35 @@
 
             form.reset();
             saveList();
+
+            // Mostrar o botão de compartilhamento quando um item é adicionado
+            shareButton.style.display = 'block';
+        });
+
+        shareButton.addEventListener('click', function() {
+            const items = [];
+            productList.querySelectorAll('li').forEach(item => {
+                items.push(item.querySelector('span').innerText);
+            });
+
+            const shareData = {
+                title: 'Minha Lista de Compras',
+                text: items.join('\n'),
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData)
+                    .then(() => console.log('Compartilhamento bem-sucedido'))
+                    .catch(err => console.log('Erro ao compartilhar:', err));
+            } else {
+                alert('Compartilhamento não suportado neste navegador.');
+            }
         });
 
         window.addEventListener('load', loadList);
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js') // Caminho relativo
+            navigator.serviceWorker.register('service-worker.js')
             .then(() => console.log('Service Worker registrado com sucesso!'))
             .catch(error => console.log('Erro ao registrar o Service Worker:', error));
         }
