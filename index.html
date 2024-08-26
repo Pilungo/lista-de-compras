@@ -6,9 +6,20 @@
     <title>Lista de Compras</title>
     <link rel="manifest" href="manifest.json">
     <style>
+        /* Variáveis de cor */
+        :root {
+            --background-color: #f0f0f0;
+            --text-color: #000;
+            --button-background: #007bff;
+            --button-text-color: #fff;
+            --list-item-background: #fff;
+        }
+
+        /* Tema claro */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: var(--background-color);
+            color: var(--text-color);
             margin: 0;
             padding: 20px;
         }
@@ -35,7 +46,7 @@
         }
 
         li {
-            background-color: white;
+            background-color: var(--list-item-background);
             margin-bottom: 10px;
             padding: 10px;
             border-radius: 5px;
@@ -63,12 +74,31 @@
             display: block;
             margin: 20px auto;
             padding: 10px;
-            background-color: #007bff;
-            color: white;
+            background-color: var(--button-background);
+            color: var(--button-text-color);
             border: none;
             border-radius: 5px;
             font-size: 16px;
             cursor: pointer;
+        }
+
+        /* Tema escuro */
+        body.dark-mode {
+            --background-color: #333;
+            --text-color: #fff;
+            --button-background: #444;
+            --button-text-color: #ddd;
+            --list-item-background: #555;
+        }
+
+        button.dark-mode {
+            background-color: var(--button-background);
+            color: var(--button-text-color);
+        }
+
+        li.dark-mode {
+            background-color: var(--list-item-background);
+            color: var(--text-color);
         }
     </style>
 </head>
@@ -90,11 +120,16 @@
     <!-- Botão para compartilhar a lista -->
     <button id="share-button" style="display: none;">Compartilhar Lista</button>
 
+    <!-- Botão para alternar entre modo claro e escuro -->
+    <button id="toggle-theme">Modo Noturno</button>
+
     <script>
         const form = document.getElementById('product-form');
         const productList = document.getElementById('product-list');
         const totalValueElement = document.getElementById('total-value');
         const shareButton = document.getElementById('share-button');
+        const toggleThemeButton = document.getElementById('toggle-theme');
+        const body = document.body;
 
         let totalValue = 0;
 
@@ -126,6 +161,9 @@
                 `;
                 if (isBought) {
                     listItem.classList.add('bought');
+                }
+                if (body.classList.contains('dark-mode')) {
+                    listItem.classList.add('dark-mode');
                 }
                 addEventListeners(listItem);
                 productList.appendChild(listItem);
@@ -197,6 +235,9 @@
                 </div>
             `;
 
+            if (body.classList.contains('dark-mode')) {
+                listItem.classList.add('dark-mode');
+            }
             addEventListeners(listItem);
             productList.appendChild(listItem);
 
@@ -230,7 +271,34 @@
             }
         });
 
-        window.addEventListener('load', loadList);
+        function toggleTheme() {
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+                toggleThemeButton.textContent = 'Modo Noturno';
+            } else {
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+                toggleThemeButton.textContent = 'Modo Claro';
+            }
+        }
+
+        function loadTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                toggleThemeButton.textContent = 'Modo Claro';
+            } else {
+                toggleThemeButton.textContent = 'Modo Noturno';
+            }
+        }
+
+        toggleThemeButton.addEventListener('click', toggleTheme);
+
+        window.addEventListener('load', function() {
+            loadList();
+            loadTheme();
+        });
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('service-worker.js')
