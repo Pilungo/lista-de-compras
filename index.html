@@ -9,57 +9,99 @@
         /* Variáveis de cor */
         :root {
             --background-color: #f0f0f0;
-            --text-color: #000;
+            --text-color: #333;
             --button-background: #007bff;
             --button-text-color: #fff;
             --list-item-background: #fff;
+            --border-color: #ddd;
+            --header-background: #007bff;
+            --header-text-color: #fff;
+            --dark-background-color: #1e1e1e;
+            --dark-text-color: #e0e0e0;
+            --dark-button-background: #444;
+            --dark-button-text-color: #ddd;
+            --dark-list-item-background: #333;
         }
 
         /* Tema claro */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--background-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        h1 {
+        header {
+            background-color: var(--header-background);
+            color: var(--header-text-color);
+            padding: 15px;
             text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .container {
+            padding: 20px;
         }
 
         form {
             display: flex;
             flex-direction: column;
-            margin-bottom: 20px;
+            gap: 10px;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         input, button {
-            margin: 5px 0;
-            padding: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
             font-size: 16px;
+        }
+
+        input {
+            border-color: var(--border-color);
+        }
+
+        button {
+            background-color: var(--button-background);
+            color: var(--button-text-color);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
         }
 
         ul {
             list-style-type: none;
             padding: 0;
+            margin: 0 auto;
+            max-width: 600px;
         }
 
         li {
             background-color: var(--list-item-background);
             margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background-color 0.3s ease;
         }
 
         li.bought {
             text-decoration: line-through;
+            background-color: #e0e0e0;
         }
 
-        .actions {
+        li .actions {
             display: flex;
             gap: 5px;
         }
@@ -68,60 +110,92 @@
             font-weight: bold;
             text-align: center;
             margin-top: 20px;
+            font-size: 18px;
         }
 
         #share-button {
             display: block;
             margin: 20px auto;
-            padding: 10px;
+            padding: 12px;
             background-color: var(--button-background);
             color: var(--button-text-color);
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 16px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #share-button:hover {
+            background-color: #0056b3;
+        }
+
+        #toggle-theme {
+            display: block;
+            margin: 20px auto;
+            padding: 12px;
+            background-color: var(--button-background);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #toggle-theme:hover {
+            background-color: #0056b3;
         }
 
         /* Tema escuro */
         body.dark-mode {
-            --background-color: #333;
-            --text-color: #fff;
-            --button-background: #444;
-            --button-text-color: #ddd;
-            --list-item-background: #555;
+            background-color: var(--dark-background-color);
+            color: var(--dark-text-color);
         }
 
-        button.dark-mode {
-            background-color: var(--button-background);
-            color: var(--button-text-color);
+        body.dark-mode header {
+            background-color: var(--header-background);
+            color: var(--dark-text-color);
         }
 
-        li.dark-mode {
-            background-color: var(--list-item-background);
-            color: var(--text-color);
+        body.dark-mode input, body.dark-mode button {
+            border-color: var(--dark-button-background);
+        }
+
+        body.dark-mode button, body.dark-mode #share-button, body.dark-mode #toggle-theme {
+            background-color: var(--dark-button-background);
+            color: var(--dark-button-text-color);
+        }
+
+        body.dark-mode li {
+            background-color: var(--dark-list-item-background);
+            color: var(--dark-text-color);
         }
     </style>
 </head>
 <body>
+    <header>
+        Lista de Compras
+    </header>
 
-    <h1>Lista de Compras</h1>
+    <div class="container">
+        <form id="product-form">
+            <input type="text" id="product-name" placeholder="Nome do Produto" required>
+            <input type="number" id="product-quantity" placeholder="Quantidade" required>
+            <input type="number" id="product-price" placeholder="Preço Unitário (R$)" step="0.01" required>
+            <button type="submit">Adicionar Produto</button>
+        </form>
 
-    <form id="product-form">
-        <input type="text" id="product-name" placeholder="Nome do Produto" required>
-        <input type="number" id="product-quantity" placeholder="Quantidade" required>
-        <input type="number" id="product-price" placeholder="Preço Unitário (R$)" step="0.01" required>
-        <button type="submit">Adicionar Produto</button>
-    </form>
+        <ul id="product-list"></ul>
 
-    <ul id="product-list"></ul>
+        <div class="total">Total: R$ <span id="total-value">0.00</span></div>
 
-    <div class="total">Total: R$ <span id="total-value">0.00</span></div>
+        <!-- Botão para compartilhar a lista -->
+        <button id="share-button" style="display: none;">Compartilhar Lista</button>
 
-    <!-- Botão para compartilhar a lista -->
-    <button id="share-button" style="display: none;">Compartilhar Lista</button>
-
-    <!-- Botão para alternar entre modo claro e escuro -->
-    <button id="toggle-theme">Modo Noturno</button>
+        <!-- Botão para alternar entre modo claro e escuro -->
+        <button id="toggle-theme">Modo Noturno</button>
+    </div>
 
     <script>
         const form = document.getElementById('product-form');
@@ -274,38 +348,19 @@
         function toggleTheme() {
             if (body.classList.contains('dark-mode')) {
                 body.classList.remove('dark-mode');
-                localStorage.setItem('theme', 'light');
                 toggleThemeButton.textContent = 'Modo Noturno';
+                shareButton.classList.remove('dark-mode');
             } else {
                 body.classList.add('dark-mode');
-                localStorage.setItem('theme', 'dark');
                 toggleThemeButton.textContent = 'Modo Claro';
+                shareButton.classList.add('dark-mode');
             }
-        }
-
-        function loadTheme() {
-            const theme = localStorage.getItem('theme') || 'light';
-            if (theme === 'dark') {
-                body.classList.add('dark-mode');
-                toggleThemeButton.textContent = 'Modo Claro';
-            } else {
-                toggleThemeButton.textContent = 'Modo Noturno';
-            }
+            saveList();
         }
 
         toggleThemeButton.addEventListener('click', toggleTheme);
 
-        window.addEventListener('load', function() {
-            loadList();
-            loadTheme();
-        });
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js')
-            .then(() => console.log('Service Worker registrado com sucesso!'))
-            .catch(error => console.log('Erro ao registrar o Service Worker:', error));
-        }
+        loadList();
     </script>
-
 </body>
 </html>
