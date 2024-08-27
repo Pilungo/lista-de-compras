@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Compras</title>
+    <title>Lista de Compras</title> 
+    <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <style>
         /* Variáveis de cor */
@@ -361,6 +362,19 @@
         toggleThemeButton.addEventListener('click', toggleTheme);
 
         loadList();
+    </script>
+
+    <!-- Registrar o service worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+                    console.log('ServiceWorker registrado com sucesso:', registration);
+                }).catch(function(error) {
+                    console.log('Falha ao registrar o ServiceWorker:', error);
+                });
+            });
+        }
     </script>
 </body>
 </html>
